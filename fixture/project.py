@@ -1,3 +1,6 @@
+from model.project import Project
+
+
 class ProjectHelper:
 
     def __init__(self,app):
@@ -26,3 +29,16 @@ class ProjectHelper:
             wd.find_element_by_name(field_name).click()
             wd.find_element_by_name(field_name).clear()
             wd.find_element_by_name(field_name).send_keys(text)
+
+    project_cache = None
+
+    def get_projects_list(self):
+        if self.project_cache is None:
+            wd = self.app.wd
+            self.open_project_page()
+            self.project_cache = []
+            for element in wd.find_elements_by_xpath("/html/body/table[3]/tbody/tr")[2:]:
+                name = wd.find_element_by_xpath("./td[1]/a").text
+                description = wd.find_element_by_xpath("./td[5]").text
+                self.project_cache.append(Project(name=name, description=description))
+        return list(self.project_cache)
