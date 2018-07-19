@@ -17,6 +17,7 @@ class ProjectHelper:
         wd.find_element_by_css_selector("input[value='Create New Project']").click()
         self.fill_project_form(project)
         wd.find_element_by_css_selector("input[value='Add Project']").click()
+        self.project_cache = None
 
     def fill_project_form(self, project):
         wd = self.app.wd
@@ -30,6 +31,11 @@ class ProjectHelper:
             wd.find_element_by_name(field_name).clear()
             wd.find_element_by_name(field_name).send_keys(text)
 
+    def count_projects(self):
+        wd = self.app.wd
+        self.open_project_page()
+        return len(wd.find_elements_by_xpath("/html/body/table[3]/tbody/tr")[2:])
+
     project_cache = None
 
     def get_projects_list(self):
@@ -42,3 +48,16 @@ class ProjectHelper:
                 description = element.find_element_by_xpath("./td[5]").text
                 self.project_cache.append(Project(name=name, description=description))
         return list(self.project_cache)
+
+    def select_project_by_index(self, index):
+        wd = self.app.wd
+        selected_project = wd.find_elements_by_xpath("/html/body/table[3]/tbody/tr")[2:][index]
+        selected_project.find_element_by_xpath("./td[1]/a").click()
+
+    def delete_project_by_index(self, index):
+        wd = self.app.wd
+        self.open_project_page()
+        self.select_project_by_index(index)
+        wd.find_element_by_css_selector("input[value='Delete Project']").click()
+        wd.find_element_by_css_selector("input[value='Delete Project']").click()
+        self.project_cache = None
