@@ -7,6 +7,7 @@ import os.path
 fixture = None
 target = None
 
+
 def load_config(file):
     global target
     if target is None:
